@@ -14,6 +14,7 @@ mod db;
 mod error;
 mod event;
 mod settings;
+mod ui;
 
 /// A `Result` alias where the `Err` case is `CliError`.
 pub type CliResult<T> = std::result::Result<T, error::CliError>;
@@ -107,7 +108,6 @@ async fn main() -> CliResult<()> {
     });
 
     let events = event::Events::new();
-    let _ = Context { client, events };
-
-    Ok(())
+    let ctx = Context { client, events };
+    ui::start_ui(ctx).await
 }
