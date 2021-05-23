@@ -1,6 +1,8 @@
 #[macro_use]
 extern crate serde_derive;
 
+use std::sync::mpsc::Receiver;
+
 use clap::{App, Arg, ArgMatches};
 use tokio;
 use tokio_postgres::{Client, NoTls};
@@ -10,10 +12,16 @@ use banner::BANNER;
 mod banner;
 mod db;
 mod error;
+mod event;
 mod settings;
 
 /// A `Result` alias where the `Err` case is `CliError`.
 pub type CliResult<T> = std::result::Result<T, error::CliError>;
+
+pub struct Context {
+    client: Client,
+    events: event::Events,
+}
 
 fn parse_args() -> ArgMatches<'static> {
     let user = "user";
@@ -97,6 +105,9 @@ async fn main() -> CliResult<()> {
             eprintln!("connection error: {}", e);
         }
     });
+
+    let events = event::Events::new();
+    let _ = Context { client, events };
 
     Ok(())
 }
