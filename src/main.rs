@@ -3,15 +3,18 @@ extern crate serde_derive;
 
 use clap::{App, Arg, ArgMatches};
 use tokio;
+use tokio_postgres::{Client, NoTls};
 
 use banner::BANNER;
 
 mod banner;
+mod db;
 mod error;
 mod settings;
 
 /// A `Result` alias where the `Err` case is `CliError`.
 pub type CliResult<T> = std::result::Result<T, error::CliError>;
+
 fn parse_args() -> ArgMatches<'static> {
     let user = "user";
     let parser = App::new(env!("CARGO_PKG_NAME"))
@@ -82,5 +85,18 @@ async fn main() -> CliResult<()> {
     if let Some(user) = args.value_of("user") {
         settings.pguser = Some(String::from(user));
     }
+
+    // Connect to the database.
+    let (client, connection) =
+        tokio_postgres::connect(&settings.get_kv_connection_string(), NoTls).await?;
+
+    // The connection object performs the actual communication with the database,
+    // so spawn it off to run on its own.
+    tokio::spawn(async move {
+        if let Err(e) = connection.await {
+            eprintln!("connection error: {}", e);
+        }
+    });
+
     Ok(())
 }
