@@ -4,4 +4,6 @@ such as state and current query.
 The information displayed is configurable through a graphical setup and can be sorted and filtered interactively.
 Tasks related to processes (e.g. killing) can be done without entering their PIDs.
 
+![](screenshot.png)
+
 Built on top of the [pg_stat_activity view](https://www.postgresql.org/docs/9.4/monitoring-stats.html#PG-STAT-ACTIVITY-VIEW).
