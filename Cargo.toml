@@ -13,3 +13,14 @@ https://www.postgresql.org/docs/9.4/monitoring-stats.html#PG-STAT-ACTIVITY-VIEW
 """
 
 [dependencies]
+chrono = "0.4"
+clap = "^2.33"
+config = "^0.11"
+exitcode = "^1.1"
+serde = "^1.0"
+serde_derive = "^1.0"
+termion = "1.5"
+time = "0.2"
+tokio = { version = "1.3.0", features = ["full"] }
+tokio-postgres = { version = "0.7.0", features = ["with-chrono-0_4", "with-time-0_2"] }
+tui = "0.14"
