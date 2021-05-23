@@ -56,6 +56,13 @@ fn parse_args() -> ArgMatches<'static> {
                 .help(r#"Database server port (default: "5432")"#),
         )
         .arg(
+            Arg::with_name("dbname")
+                .short("d")
+                .long("dbname")
+                .default_value("5432")
+                .help(&format!(r#"database name to connect to (default: "{}")"#, user)),
+        )
+        .arg(
             Arg::with_name("user")
                 .short("u")
                 .long("username")
@@ -90,6 +97,9 @@ async fn main() -> CliResult<()> {
     }
     if let Some(port) = args.value_of("port") {
         settings.pgport = Some(String::from(port));
+    }
+    if let Some(dbname) = args.value_of("dbname") {
+        settings.pgdatabase = Some(String::from(dbname));
     }
     if let Some(user) = args.value_of("user") {
         settings.pguser = Some(String::from(user));
