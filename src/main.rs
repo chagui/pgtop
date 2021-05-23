@@ -1,3 +1,6 @@
+#[macro_use]
+extern crate serde_derive;
+
 use clap::{App, Arg, ArgMatches};
 use tokio;
 
@@ -5,10 +8,10 @@ use banner::BANNER;
 
 mod banner;
 mod error;
+mod settings;
 
 /// A `Result` alias where the `Err` case is `CliError`.
 pub type CliResult<T> = std::result::Result<T, error::CliError>;
-
 fn parse_args() -> ArgMatches<'static> {
     let user = "user";
     let parser = App::new(env!("CARGO_PKG_NAME"))
@@ -65,5 +68,19 @@ fn parse_args() -> ArgMatches<'static> {
 #[tokio::main] // By default, tokio_postgres uses the tokio crate as its runtime.
 async fn main() -> CliResult<()> {
     let args = parse_args();
+    let mut settings = settings::ConnectionSettings::new().unwrap_or_else(|err| {
+        println!("configuration error: {:}", err);
+        std::process::exit(exitcode::CONFIG);
+    });
+    // cli args have precedence over env config
+    if let Some(host) = args.value_of("host") {
+        settings.pghost = Some(String::from(host));
+    }
+    if let Some(port) = args.value_of("port") {
+        settings.pgport = Some(String::from(port));
+    }
+    if let Some(user) = args.value_of("user") {
+        settings.pguser = Some(String::from(user));
+    }
     Ok(())
 }
