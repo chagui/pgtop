@@ -1,6 +1,7 @@
 #[macro_use]
 extern crate serde_derive;
 
+use std::env;
 use std::sync::mpsc::Receiver;
 
 use clap::{App, Arg, ArgMatches};
@@ -25,7 +26,7 @@ pub struct Context {
 }
 
 fn parse_args() -> ArgMatches<'static> {
-    let user = "user";
+    let user = env::var("USER").expect("expected variable USER not set");
     let parser = App::new(env!("CARGO_PKG_NAME"))
         .version(env!("CARGO_PKG_VERSION"))
         .author(env!("CARGO_PKG_AUTHORS"))
