@@ -1,7 +1,6 @@
 #[macro_use]
 extern crate serde_derive;
 
-use tokio;
 use tokio_postgres::{Client, NoTls};
 
 use cli::parse_args;

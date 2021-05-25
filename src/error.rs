@@ -1,8 +1,6 @@
 use std::io;
 use std::sync::mpsc;
 
-use tokio_postgres;
-
 #[derive(Debug)]
 pub enum CliError {
     DBError { source: tokio_postgres::Error },
