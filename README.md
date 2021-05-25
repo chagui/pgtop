@@ -1,3 +1,8 @@
+    ________ ________________________ ________
+    ___  __ \__  ____/___  __/__  __ \___  __ \
+    __  /_/ /_  / __  __  /   _  / / /__  /_/ /
+    _  ____/ / /_/ /  _  /    / /_/ / _  ____/
+    /_/      \____/   /_/     \____/  /_/
 # pgtop #
 Postgres database interactive process viewer, showing information related to the current database activity,
 such as state and current query.
