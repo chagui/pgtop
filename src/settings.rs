@@ -20,7 +20,7 @@ impl ConnectionSettings {
         let mut settings = Config::default();
         // if available use the operating system name of the user running the application.
         if let Ok(user) = env::var("USER") {
-            let _ = settings.set_default("pguser", user.clone());
+            let _ = settings.set_default("pguser", user);
         }
         settings.merge(Environment::default())?;
         settings.try_into()
