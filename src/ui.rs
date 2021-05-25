@@ -144,7 +144,7 @@ fn draw_system_info<B>(frame: &mut Frame<B>, system_info: &PGSystemInfo, layout_
 where
     B: Backend,
 {
-    let rows = iter::once(system_info).map(|system_info| Row::from(system_info));
+    let rows = iter::once(system_info).map(Row::from);
     let system_info_table = Table::new(rows)
         .widths(&[
             Constraint::Percentage(60),
@@ -168,7 +168,7 @@ fn draw_activities<B>(
     B: Backend,
 {
     let header = StatActivityView::get_header_row();
-    let rows = activities.into_iter().map(|activity| Row::from(activity));
+    let rows = activities.into_iter().map(Row::from);
     let stat_activity_table = Table::new(rows)
         .header(header)
         .widths(&[

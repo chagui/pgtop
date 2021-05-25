@@ -61,7 +61,7 @@ pub async fn get_activities(client: &Client) -> CliResult<Vec<PGStatActivity>> {
         .query(activities_query, &[])
         .await?
         .into_iter()
-        .map(|row| PGStatActivity::from(row))
+        .map(PGStatActivity::from)
         .collect::<Vec<_>>();
     Ok(stats)
 }
