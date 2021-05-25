@@ -1,8 +1,6 @@
 use tokio_postgres::{Client, Row};
 
 use crate::CliResult;
-use chrono::{DateTime, Utc};
-use time::PrimitiveDateTime;
 
 #[derive(Debug)]
 pub struct PGSystemInfo {

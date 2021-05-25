@@ -1,10 +1,6 @@
 #[macro_use]
 extern crate serde_derive;
 
-use std::env;
-use std::sync::mpsc::Receiver;
-
-use clap::{App, Arg, ArgMatches};
 use tokio;
 use tokio_postgres::{Client, NoTls};
 

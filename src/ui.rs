@@ -1,15 +1,13 @@
 use std::io;
 use std::iter;
-use std::thread::sleep;
-use std::time::Duration;
+use std::mem;
 
-use chrono::{DateTime, Utc};
 use termion::event::Key;
 use termion::raw::IntoRawMode;
 use tui::backend::Backend;
-use tui::layout::{Alignment, Rect};
+use tui::layout::Rect;
 use tui::style::Color;
-use tui::text::{Span, Text};
+use tui::text::Span;
 use tui::{
     backend::TermionBackend,
     layout::{Constraint, Layout},
@@ -35,8 +33,8 @@ const SELECTED_STYLE: Style = Style {
     sub_modifier: Modifier::empty(),
 };
 
-impl<'a> From<&PGStatActivity> for Row<'a> {
-    fn from(activity: &PGStatActivity) -> Row<'a> {
+impl<'a> From<PGStatActivity> for Row<'a> {
+    fn from(activity: PGStatActivity) -> Row<'a> {
         let mut state_cell_style = Style::default();
         if activity.state == "active" {
             state_cell_style = state_cell_style
@@ -48,16 +46,16 @@ impl<'a> From<&PGStatActivity> for Row<'a> {
         // let fmt_query: String = activity.query.chars().take(50).collect();
 
         let cells = vec![
-            Cell::from(activity.datname.clone()),
+            Cell::from(activity.datname),
             Cell::from(activity.pid.to_string()),
-            Cell::from(activity.usename.clone()),
-            Cell::from(activity.client_addr.clone()),
+            Cell::from(activity.usename),
+            Cell::from(activity.client_addr),
             Cell::from(activity.client_port.to_string()),
-            // Cell::from(activity.xact_start.unwrap_or(String::from("")).clone()),
-            Cell::from(activity.backend_duration.to_string()),
-            Cell::from(activity.query_duration.to_string()),
-            Cell::from(activity.state.clone()).style(state_cell_style),
-            Cell::from(activity.query.clone()),
+            // Cell::from(activity.xact_start.unwrap_or(String::from(""))),
+            Cell::from(activity.backend_duration),
+            Cell::from(activity.query_duration),
+            Cell::from(activity.state).style(state_cell_style),
+            Cell::from(activity.query),
         ];
 
         let height = 1u16;
@@ -81,7 +79,7 @@ impl<'a> From<&PGSystemInfo> for Row<'a> {
 
 struct StatActivityView {
     state: TableState,
-    activities: Vec<crate::db::PGStatActivity>,
+    activities: Vec<PGStatActivity>,
 }
 
 impl StatActivityView {
@@ -163,16 +161,14 @@ where
 
 fn draw_activities<B>(
     frame: &mut Frame<B>,
-    stat_activity_view: &mut StatActivityView,
+    activities: Vec<PGStatActivity>,
+    state: &mut TableState,
     layout_chunk: Rect,
 ) where
     B: Backend,
 {
     let header = StatActivityView::get_header_row();
-    let rows = stat_activity_view
-        .activities
-        .iter()
-        .map(|activity| Row::from(activity));
+    let rows = activities.into_iter().map(|activity| Row::from(activity));
     let stat_activity_table = Table::new(rows)
         .header(header)
         .widths(&[
@@ -193,11 +189,7 @@ fn draw_activities<B>(
                 .title(Span::styled(String::from("Activities"), TITLE_STYLE)),
         )
         .highlight_style(SELECTED_STYLE);
-    frame.render_stateful_widget(
-        stat_activity_table,
-        layout_chunk,
-        &mut stat_activity_view.state,
-    );
+    frame.render_stateful_widget(stat_activity_table, layout_chunk, state);
 }
 
 pub async fn start_ui(ctx: Context) -> CliResult<()> {
@@ -221,7 +213,12 @@ pub async fn start_ui(ctx: Context) -> CliResult<()> {
                 .split(frame.size());
 
             draw_system_info(&mut frame, &system_info, main_layout[0]);
-            draw_activities(&mut frame, &mut stat_activity_view, main_layout[1]);
+            draw_activities(
+                &mut frame,
+                mem::replace(&mut stat_activity_view.activities, vec![]),
+                &mut stat_activity_view.state,
+                main_layout[1],
+            );
         })?;
 
         match ctx.events.next()? {

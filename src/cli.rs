@@ -1,9 +1,6 @@
 use std::env;
-use std::sync::mpsc::Receiver;
 
 use clap::{App, Arg, ArgMatches};
-use tokio;
-use tokio_postgres::{Client, NoTls};
 
 use crate::banner::BANNER;
 
