@@ -1,4 +1,10 @@
 repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.0.1
+    hooks:
+      - id: check-toml
+      - id: check-yaml
+      - id: end-of-file-fixer
   - repo: https://github.com/doublify/pre-commit-rust
     rev: v1.0
     hooks:
@@ -8,4 +14,3 @@ repos:
         name: cargo check
       - id: clippy
         name: cargo clippy 
-
