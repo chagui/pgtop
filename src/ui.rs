@@ -215,7 +215,7 @@ pub async fn start_ui(ctx: Context) -> CliResult<()> {
             draw_system_info(&mut frame, &system_info, main_layout[0]);
             draw_activities(
                 &mut frame,
-                mem::replace(&mut stat_activity_view.activities, vec![]),
+                mem::take(&mut stat_activity_view.activities),
                 &mut stat_activity_view.state,
                 main_layout[1],
             );
