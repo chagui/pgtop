@@ -19,7 +19,10 @@ pub fn parse_args() -> ArgMatches<'static> {
                 .long("config")
                 .takes_value(true)
                 .value_name("FILE")
-                .help(r#"Use custom config file (default: "~/.config/jw-cli/config.yaml")"#),
+                .help(&format!(
+                    r#"Use custom config file (default: "~/.config/{}/config.yaml")"#,
+                    env!("CARGO_PKG_NAME")
+                )),
         )
         .arg(
             Arg::with_name("host")
