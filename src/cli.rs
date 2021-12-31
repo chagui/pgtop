@@ -1,11 +1,8 @@
-use std::env;
-
 use clap::{App, Arg, ArgMatches};
 
 use crate::banner::BANNER;
 
-pub fn parse_args() -> ArgMatches<'static> {
-    let user = env::var("USER").expect("expected variable USER not set");
+pub fn parse_args(user: &str) -> ArgMatches {
     let parser = App::new(env!("CARGO_PKG_NAME"))
         .version(env!("CARGO_PKG_VERSION"))
         .author(env!("CARGO_PKG_AUTHORS"))
@@ -35,6 +32,7 @@ pub fn parse_args() -> ArgMatches<'static> {
             Arg::with_name("port")
                 .short("p")
                 .long("port")
+                .env("PGPORT")
                 .default_value("5432")
                 .help(r#"Database server port (default: "5432")"#),
         )
@@ -42,9 +40,9 @@ pub fn parse_args() -> ArgMatches<'static> {
             Arg::with_name("dbname")
                 .short("d")
                 .long("dbname")
-                .default_value("5432")
+                .default_value(user)
                 .help(&format!(
-                    r#"database name to connect to (default: "{}")"#,
+                    r#"Database name to connect to (default: "{}")"#,
                     user
                 )),
         )
@@ -52,7 +50,7 @@ pub fn parse_args() -> ArgMatches<'static> {
             Arg::with_name("user")
                 .short("u")
                 .long("username")
-                .takes_value(true)
+                .default_value(user)
                 .help(&format!(r#"Database user name (default: "{}")"#, user)),
         )
         .arg(

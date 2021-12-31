@@ -1,6 +1,8 @@
 #[macro_use]
 extern crate serde_derive;
 
+use std::env;
+
 use tokio_postgres::{Client, NoTls};
 
 use cli::parse_args;
@@ -23,7 +25,8 @@ pub struct Context {
 
 #[tokio::main] // By default, tokio_postgres uses the tokio crate as its runtime.
 async fn main() -> CliResult<()> {
-    let args = parse_args();
+    let user = env::var("PGUSER").unwrap_or_else(|_| String::from("postgres")); // todo: use effective user instead of postgres
+    let args = parse_args(&user);
     let mut settings = settings::ConnectionSettings::new().unwrap_or_else(|err| {
         eprintln!("configuration error: {:}", err);
         std::process::exit(exitcode::CONFIG);
